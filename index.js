@@ -4,26 +4,24 @@ const bcrypt = require('bcrypt');
 app.use(express.json());
 const PORT = 3000;
 const SALT =10;
-const regex = require('regex');
 
 async function validateRequest(req, res, next) {
     try {
         let email =req.body.email;
-        let matchEmail = email.match(regex('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'));
-        if (!matchEmail) {
-            return res.json({
-                message:'invalid email'
-            })
-        }
-        if (req.pasword.length < 8) return res.json({
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                message: 'Invalid email'
+            });
+        if (req.body.pasword.length < 8) return res.json({
             message:'invalid password length'
         });
         next();
     } catch (error) {
         throw error;
     }
-    }
-
+}
+}
 async function hashPassword(req, res, next) {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, SALT, function(err, hash) {
