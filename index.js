@@ -13,7 +13,8 @@ async function validateRequest(req, res, next) {
             return res.status(400).json({
                 message: 'Invalid email'
             });
-        if (req.body.pasword.length < 8) return res.json({
+        }
+        if (req.body.password.length < 8) return res.json({
             message:'invalid password length'
         });
         next();
@@ -21,20 +22,19 @@ async function validateRequest(req, res, next) {
         throw error;
     }
 }
-}
 async function hashPassword(req, res, next) {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, SALT, function(err, hash) {
             console.log('hashed password', hashedPassword);
-            next();
         });
+        next();
         
     } catch (error) {
         console.log('an error occured while hashing the password', error);
         throw error;
     }
 }
-// app.use(validateRequest);
+app.use(validateRequest);
 app.use(hashPassword);
 app.post('/register', function log(req, res) {
     console.log()
