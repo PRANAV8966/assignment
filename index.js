@@ -25,7 +25,8 @@ async function validateRequest(req, res, next) {
 }
 async function hashPassword(req, res, next) {
     try {
-        const hashedPassword = await bcrypt.hash(req.body.password, SALT, function(err, hash) {
+        console.log(req.body)
+        const hashedPassword = await bcrypt.hash(req.body.password, SALT);
             console.log('hashed password', hashedPassword);
             return res.status(200).json({
                 success:true,
@@ -35,8 +36,7 @@ async function hashPassword(req, res, next) {
                     email: req.body.email,
                     user: req.body.UserName
                 }
-            })
-        });
+            });
         next();
         
     } catch (error) {
