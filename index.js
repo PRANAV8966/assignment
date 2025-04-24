@@ -1,10 +1,12 @@
 const express = require('express');
 const app = express();
 const bcrypt = require('bcrypt');
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
 const PORT = 3000;
 const SALT =10;
+
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+
 
 async function validateRequest(req, res, next) {
     try {
@@ -25,18 +27,9 @@ async function validateRequest(req, res, next) {
 }
 async function hashPassword(req, res, next) {
     try {
-        console.log(req.body)
         const hashedPassword = await bcrypt.hash(req.body.password, SALT);
             console.log('hashed password', hashedPassword);
-            return res.status(200).json({
-                success:true,
-                message:'successfully created user',
-                data:{
-                    password: hashedPassword,
-                    email: req.body.email,
-                    user: req.body.UserName
-                }
-            });
+            req.body.password = hashedPassword;
         next();
         
     } catch (error) {
@@ -47,7 +40,12 @@ async function hashPassword(req, res, next) {
 app.use(validateRequest);
 app.use(hashPassword);
 app.post('/register', function log(req, res) {
-    console.log()
+    return res.status(200).json({
+        data:req.body,
+        message: 'successfully registered user and hashed the password securely',
+        success:true,
+        error:{}
+    })
 })
 const startServer = async (PORT) => {
     app.listen(PORT, ()=> {
